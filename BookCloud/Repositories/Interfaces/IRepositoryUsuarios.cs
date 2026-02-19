@@ -9,5 +9,6 @@ namespace BookCloud.Repositories.Interfaces
         Task<Usuario> GetUserByEmail(string email);
 
         Task<Usuario> GetInfoUsario(string id);
+        Task ActualizarUsuarioAsync(Usuario user);
     }
 }

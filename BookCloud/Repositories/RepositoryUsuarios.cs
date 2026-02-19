@@ -47,5 +47,10 @@ namespace BookCloud.Repositories
             }
             return null;
         }
+        public async Task ActualizarUsuarioAsync(Usuario user)
+        {
+            _context.Usuarios.Update(user);
+            await _context.SaveChangesAsync();
+        }
     }
 }
