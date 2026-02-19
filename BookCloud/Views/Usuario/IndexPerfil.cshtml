@@ -1,0 +1,37 @@
+﻿@model Usuario 
+
+@{
+    ViewData["Title"] = "Perfil";
+}
+@if (Model != null)
+{
+    <div class="card" style="width: 30rem;">
+        <img src="@Model.Foto" class="card-img-top" alt="Foto de perfil">
+        <div class="card-body">
+            <form asp-action="ActualizarPerfil" asp-controller="Usuario" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" name="Nombre" value="@Model.Nombre" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="correo" class="form-label">Correo</label>
+                    <input type="email" class="form-control" id="correo" name="Correo" value="@Model.Correo" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="contraseña" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="contraseña" name="Contraseña" placeholder="Nueva contraseña (dejar en blanco para mantener)">
+                </div>
+
+                <div class="mb-3">
+                    <label for="foto" class="form-label">Foto de perfil</label>
+                    <input type="file" class="form-control" id="foto" name="Foto" accept="image/*">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                <a href="@Url.Action("AñadirLibro", "Libro")" class="btn btn-secondary">Añadir libro</a>
+            </form>
+        </div>
+    </div>
+}
