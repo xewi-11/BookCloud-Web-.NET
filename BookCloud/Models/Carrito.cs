@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookCloud.Models
 {
-    [Table("Pedidos")]
-    public class Pedido
+    [Table("Carritos")]
+    public class Carrito
     {
         [Key]
         [Column("Id")]
@@ -14,16 +14,8 @@ namespace BookCloud.Models
         [Column("UsuarioId")]
         public int UsuarioId { get; set; }
 
-        [Column("FechaPedido")]
-        public DateTime FechaPedido { get; set; }
-
-        [Required]
-        [Column("Total")]
-        public decimal Total { get; set; }
-
-        [Required]
-        [Column("Estado")]
-        public string Estado { get; set; }
+        [Column("FechaCreacion")]
+        public DateTime FechaCreacion { get; set; }
 
         [Required]
         [Column("Activo")]
@@ -32,7 +24,6 @@ namespace BookCloud.Models
         [ForeignKey("UsuarioId")]
         public Usuario Usuario { get; set; }
 
-        public ICollection<Pago> Pagos { get; set; }
-        public ICollection<PedidoDetalle> PedidoDetalles { get; set; } = new List<PedidoDetalle>();
+        public ICollection<CarritoItem> CarritoItems { get; set; } = new List<CarritoItem>();
     }
 }
