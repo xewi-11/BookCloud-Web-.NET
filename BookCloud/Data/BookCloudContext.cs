@@ -9,5 +9,6 @@ namespace BookCloud.Data
         {
         }
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Libro> Libros { get; set; }
     }
 }

@@ -5,22 +5,22 @@ using static BookCloud.Helpers.FolderHelper;
 namespace BookCloud.Helpers
 {
 
-    public class FotoUsuario
+    public class FotoLibro
     {
         private IWebHostEnvironment webHostEnvironment;
         private IServer server;
-        public FotoUsuario(IWebHostEnvironment webHostEnvironment, IServer server)
+        public FotoLibro(IWebHostEnvironment webHostEnvironment, IServer server)
         {
             this.webHostEnvironment = webHostEnvironment;
             this.server = server;
         }
-        public string MapPath(string fileName, Folder folder, int userId)
+        public string MapPath(string fileName, Folder folder, int userId, string titulo)
         {
-            if (folder == Folder.Usuarios)
+            if (folder == Folder.Libros)
             {
-                string carpeta = "usuarios";
+                string carpeta = "libros";
                 string rootPath = this.webHostEnvironment.WebRootPath;
-                string fileNameWithId = $"{userId}{fileName}";
+                string fileNameWithId = $"{userId}_{titulo}_{fileName}";
                 return Path.Combine(rootPath, "imagenes", carpeta, fileNameWithId);
             }
             else
@@ -30,9 +30,9 @@ namespace BookCloud.Helpers
         }
         public string MapUrlPath(string fileName, Folder folder, int userId)
         {
-            if (folder == Folder.Usuarios)
+            if (folder == Folder.Libros)
             {
-                string carpeta = "usuarios";
+                string carpeta = "libros";
                 var adresses = this.server.Features.Get<IServerAddressesFeature>().Addresses;
                 string serverUrl = adresses.FirstOrDefault()?.ToString();
                 return $"{serverUrl}/imagenes/{carpeta}/{fileName}";

@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<FotoUsuario>();
+builder.Services.AddSingleton<FolderHelper>();
+builder.Services.AddSingleton<FotoLibro>();
 builder.Services.AddSession(options =>
 {
 
@@ -14,6 +16,7 @@ builder.Services.AddSession(options =>
 });
 
 builder.Services.AddTransient<RepositoryUsuarios>();
+builder.Services.AddTransient<RepositoryLibros>();
 
 builder.Services.AddDbContext<BookCloudContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BookCloud")));
