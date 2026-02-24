@@ -37,7 +37,7 @@ namespace BookCloud.Controllers
             Libro libro = new Libro();
             if (imagenFile != null && imagenFile.Length > 0 && UsuarioId != null)
             {
-                string path = this._fotoHelper.MapPath(imagenFile.FileName, Folder.Usuarios, UsuarioId, Titulo);
+                string path = this._fotoHelper.MapPath(imagenFile.FileName, Folder.Libros, UsuarioId, Titulo);
                 using (Stream stream = new FileStream(path, FileMode.Create))
                 {
                     await imagenFile.CopyToAsync(stream);

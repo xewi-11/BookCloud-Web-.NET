@@ -62,6 +62,8 @@ namespace BookCloud.Repositories
     //        L.Stock,
     //        L.Foto,
     //        L.FechaPublicacion,
+    //        L.Activo,
+    //        L.UsuarioId
     //        U.Nombre AS Vendedor
     //    FROM Libros L
     //    INNER JOIN Usuarios U ON L.UsuarioId = U.Id
@@ -69,7 +71,7 @@ namespace BookCloud.Repositories
     //        L.Id = @LibroId
     //        AND L.Activo = 1
     //        AND U.Activo = 1;
-    //    END
+    //END
 
 
 

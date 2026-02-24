@@ -1,3 +1,15 @@
+:root {
+    --verde-fondo: #0B1F1A;
+    --verde-card: #132F28;
+    --dorado: #C6A75E;
+    --dorado-hover: #E6C77A;
+    --texto-claro: #F1F1F1;
+}
+body {
+    background-color: var(--verde-fondo);
+    color: var(--texto-claro);
+}
+
 html {
   font-size: 14px;
 }
@@ -28,4 +40,12 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem #0B1F1A, 0 0 0 0.25rem #C6A75E;
 }
