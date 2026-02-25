@@ -20,24 +20,28 @@ namespace BookCloud.Repositories
     //BEGIN
     //    SET NOCOUNT ON;
 
-    //    SELECT
-    //        L.Id,
-    //        L.Titulo,
-    //        L.Autor,
-    //        L.Descripcion,
-    //        L.Precio,
-    //        L.Stock,
-    //        L.Foto,
-    //        L.FechaPublicacion,
-    //        L.Activo,
-    //        U.Nombre AS Vendedor
-    //    FROM Libros L
-    //    INNER JOIN Usuarios U ON L.UsuarioId = U.Id
-    //    WHERE
-    //        L.Activo = 1
-    //        AND U.Activo = 1
-    //        AND L.Stock > 0;
-    //    END
+    //SELECT
+    //    L.Id,
+    //    L.Titulo,
+    //    L.Autor,
+    //    L.Descripcion,
+    //    L.Precio,
+    //    L.Stock,
+    //    L.Foto,
+    //    L.FechaPublicacion,
+    //    L.Activo,
+    //    U.Nombre AS Vendedor
+    //FROM Libros L
+
+    //INNER JOIN Usuarios U ON L.UsuarioId = U.Id
+
+    //WHERE
+    //    L.Activo = 1
+
+    //    AND U.Activo = 1
+
+    //    AND L.Stock > 0;
+    //END
 
 
 
@@ -99,7 +103,7 @@ namespace BookCloud.Repositories
     //    )
     //    BEGIN
     //        RAISERROR('El usuario no existe o no está activo.',16,1);
-    //    RETURN;
+    //RETURN;
     //    END
 
     //    INSERT INTO Libros
@@ -126,7 +130,7 @@ namespace BookCloud.Repositories
     //        @UsuarioId,
     //        1
     //    );
-    //    END
+    //END
 
 
 
@@ -158,7 +162,7 @@ namespace BookCloud.Repositories
     //        )
     //        BEGIN
     //            RAISERROR('El libro no existe o está inactivo.',16,1);
-    //    RETURN;
+    //RETURN;
     //        END
 
     //        UPDATE Libros
@@ -199,14 +203,14 @@ namespace BookCloud.Repositories
     //        )
     //        BEGIN
     //            RAISERROR('El libro no existe o ya está inactivo.',16,1);
-    //    RETURN;
+    //RETURN;
     //        END
 
     //        UPDATE Libros
     //        SET Activo = 0
     //        WHERE Id = @LibroId;
 
-    //    END TRY
+    //END TRY
     //    BEGIN CATCH
     //        THROW;
     //    END CATCH

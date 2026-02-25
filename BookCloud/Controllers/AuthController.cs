@@ -8,23 +8,24 @@ namespace BookCloud.Controllers
     public class AuthController : Controller
     {
         private RepositoryUsuarios _repo;
+
         public AuthController(RepositoryUsuarios repo)
         {
             this._repo = repo;
         }
+
         [HttpGet]
         public IActionResult RegisterUser()
         {
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> RegisterUser(RegisterUSer usuario)
         {
             if (usuario == null)
             {
-
                 return View();
-
             }
 
             string salt = Encryption.GenerateSalt();
@@ -32,35 +33,40 @@ namespace BookCloud.Controllers
 
             Usuario user = new Usuario
             {
-
                 Nombre = usuario.Nombre,
                 Correo = usuario.Correo,
-                PassWordHash = encryptedPassword,
-                Salt = salt,
+                Password = usuario.Pass, // Contraseña en texto plano opcional
                 FechaRegistro = DateTime.Now,
                 Activo = true,
                 Foto = null
             };
 
-            await this._repo.CreateUserASync(user);
+            UsuarioSeguridad seguridad = new UsuarioSeguridad
+            {
+                PasswordHash = encryptedPassword,
+                Salt = salt
+            };
+
+            await this._repo.CreateUserASync(user, seguridad);
             return RedirectToAction("Login");
         }
+
         public IActionResult Login()
         {
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Login(Credenciales cred)
         {
             Usuario s = await this._repo.GetUserByEmail(cred.Correo);
-            if (s != null)
+            if (s != null && s.UsuarioSeguridad != null)
             {
                 // Verificar la contraseña
-                byte[] hash = Encryption.EncryptPassword(cred.Pass, s.Salt);
-                if (Encryption.CompareArrays(hash, s.PassWordHash))
+                byte[] hash = Encryption.EncryptPassword(cred.Password, s.UsuarioSeguridad.Salt);
+                if (Encryption.CompareArrays(hash, s.UsuarioSeguridad.PasswordHash))
                 {
                     // Autenticación exitosa
-                    // Aquí puedes establecer la sesión o el token de autenticación
                     HttpContext.Session.SetString("Id", s.Id.ToString());
                     HttpContext.Session.SetString("Nombre", s.Nombre);
                     HttpContext.Session.SetString("Correo", s.Correo);
@@ -73,4 +79,3 @@ namespace BookCloud.Controllers
         }
     }
 }
-//Usuario s = await this._repo.GetUserByEmail(usuario.Correo);

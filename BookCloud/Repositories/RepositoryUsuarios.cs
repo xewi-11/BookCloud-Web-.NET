@@ -13,44 +13,58 @@ namespace BookCloud.Repositories
         {
             this._context = context;
         }
-        public async Task CreateUserASync(Usuario user)
-        {
-            var consulta = from datos in this._context.Usuarios select datos;
 
-            int id = 1;
-            user.Id = id;
-            await this._context.Usuarios.AddAsync(user);
-            await this._context.SaveChangesAsync();
+        public async Task CreateUserASync(Usuario user, UsuarioSeguridad seguridad)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                await this._context.Usuarios.AddAsync(user);
+                await this._context.SaveChangesAsync();
+
+                seguridad.IdUsuario = user.Id;
+                await this._context.UsuarioCredenciales.AddAsync(seguridad);
+                await this._context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<Usuario> GetInfoUsario(string id)
         {
-            var consulta = from datos in this._context.Usuarios
-                           where datos.Id.ToString() == id
-                           select datos;
-
-            return await consulta.FirstOrDefaultAsync();
+            return await _context.Usuarios
+                .Include(u => u.UsuarioSeguridad)
+                .FirstOrDefaultAsync(u => u.Id.ToString() == id);
         }
 
         public async Task<Usuario> GetUserByEmail(string email)
         {
-
-            var consulta = from datos in this._context.Usuarios
-                           where datos.Correo == email
-                           select datos;
-
-            Usuario user = await consulta.FirstOrDefaultAsync();
-
-            if (user != null)
-            {
-                return user;
-            }
-            return null;
+            return await _context.Usuarios
+                .Include(u => u.UsuarioSeguridad)
+                .FirstOrDefaultAsync(u => u.Correo == email);
         }
+
         public async Task ActualizarUsuarioAsync(Usuario user)
         {
             _context.Usuarios.Update(user);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task ActualizarSeguridadUsuarioAsync(UsuarioSeguridad seguridad)
+        {
+            _context.UsuarioCredenciales.Update(seguridad);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<UsuarioSeguridad> GetSeguridadUsuario(int idUsuario)
+        {
+            return await _context.UsuarioCredenciales
+                .FirstOrDefaultAsync(us => us.IdUsuario == idUsuario);
         }
     }
 }
