@@ -13,6 +13,11 @@ namespace BookCloud.Data
         public DbSet<UsuarioSeguridad> UsuarioCredenciales { get; set; }
         public DbSet<Libro> Libros { get; set; }
 
+        public DbSet<Pago> Pagos { get; set; }
+        public DbSet<SaldoMovimiento> SaldoMovimientos { get; set; }
+        public DbSet<Pedido> Pedidos { get; set; }
+        public DbSet<PedidoDetalle> PedidoDetalles { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -21,7 +26,7 @@ namespace BookCloud.Data
             modelBuilder.Entity<Usuario>()
                 .HasOne(u => u.UsuarioSeguridad)
                 .WithOne(us => us.Usuario)
-                .HasForeignKey<UsuarioSeguridad>(us => us.IdUsuario)
+                .HasForeignKey<UsuarioSeguridad>(us => us.UsuarioId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

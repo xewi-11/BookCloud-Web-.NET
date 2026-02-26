@@ -1,0 +1,145 @@
+@model WalletViewModel
+
+@{
+    ViewData["Title"] = "Mi Wallet";
+}
+
+<div class="container wallet-container">
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <h1 class="section-title">
+        <i class="bi bi-wallet2"></i> Mi Wallet
+    </h1>
+
+    <!-- Tarjeta de saldo principal -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mx-auto">
+            <div class="wallet-balance-card">
+                <div class="balance-header">
+                    <i class="bi bi-cash-stack"></i>
+                    <span>Saldo Disponible</span>
+                </div>
+                <div class="balance-amount">
+                    $@Model.SaldoActual.ToString("N2")
+                </div>
+                <div class="balance-footer">
+                    <div class="balance-stat">
+                        <i class="bi bi-arrow-up-circle text-success"></i>
+                        <div>
+                            <small>Ingresos</small>
+                            <div class="stat-value text-success">$@Model.TotalIngresos</div>
+                        </div>
+                    </div>
+                    <div class="balance-stat">
+                        <i class="bi bi-arrow-down-circle text-danger"></i>
+                        <div>
+                            <small>Gastos</small>
+                            <div class="stat-value text-danger">$@Model.TotalGastos</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón de recarga -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-plus-circle"></i> Recargar Saldo
+                </div>
+                <div class="card-body">
+                    <form asp-action="RecargarSaldo" method="post">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-8">
+                                <label class="form-label">
+                                    <i class="bi bi-cash-coin"></i> Monto a recargar
+                                </label>
+                                <input type="number" 
+                                       name="monto" 
+                                       class="form-control" 
+                                       placeholder="0.00" 
+                                       step="0.01" 
+                                       min="1" 
+                                       max="10000" 
+                                       required />
+                                <small class="text-muted">Mínimo: $1.00 - Máximo: $10,000.00</small>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-credit-card"></i> Recargar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historial de movimientos -->
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-clock-history"></i> Historial de Movimientos
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.Movimientos != null && Model.Movimientos.Any())
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var movimiento in Model.Movimientos)
+                            {
+                                <div class="list-group-item movement-item">
+                                    <div class="movement-icon @(movimiento.Tipo == "Ingreso" ? "income" : "expense")">
+                                        <i class="bi @(movimiento.Tipo == "Ingreso" ? "bi-arrow-down-circle" : "bi-arrow-up-circle")"></i>
+                                    </div>
+                                    <div class="movement-details">
+                                        <div class="movement-description">
+                                            @movimiento.Descripcion
+                                        </div>
+                                        <div class="movement-date">
+                                            <i class="bi bi-calendar3"></i> 
+                                            @movimiento.Fecha.ToString("dd/MM/yyyy HH:mm")
+                                        </div>
+                                        @if (movimiento.PedidoId.HasValue)
+                                        {
+                                            <div class="movement-reference">
+                                                <i class="bi bi-receipt"></i> Pedido #@movimiento.PedidoId
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="movement-amount @(movimiento.Tipo == "Ingreso" ? "income" : "expense")">
+                                        @(movimiento.Tipo == "Ingreso" ? "+" : "-")$@movimiento.Monto.ToString("N2")
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox" style="font-size: 3rem; color: var(--texto-secundario);"></i>
+                            <p class="text-muted mt-3">No hay movimientos registrados</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

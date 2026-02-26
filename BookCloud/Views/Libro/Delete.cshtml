@@ -1,0 +1,79 @@
+@model BookCloud.Models.Libro
+
+@{
+    ViewData["Title"] = "Eliminar Libro";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white text-center">
+                    <i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i>
+                    <h2 class="mb-0">Confirmar Eliminación</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Atención:</strong> Esta acción desactivará el libro y no podrá ser revertida.
+                    </div>
+
+                    <div class="row g-4">
+                        <!-- Imagen del libro -->
+                        <div class="col-md-4 text-center">
+                            <img src="~/imagenes/Libros/@Model.Foto" 
+                                 alt="@Model.Titulo" 
+                                 class="img-fluid rounded" 
+                                 style="max-height: 250px; border: 2px solid #dc3545;" />
+                        </div>
+
+                        <!-- Detalles del libro -->
+                        <div class="col-md-8">
+                            <h3 class="text-danger mb-3">@Model.Titulo</h3>
+                            
+                            <div class="mb-2">
+                                <strong><i class="bi bi-person-fill"></i> Autor:</strong> @Model.Autor
+                            </div>
+                            
+                            <div class="mb-2">
+                                <strong><i class="bi bi-text-paragraph"></i> Descripción:</strong>
+                                <p class="text-muted mb-0">@Model.Descripcion</p>
+                            </div>
+
+                            <hr />
+
+                            <div class="row">
+                                <div class="col-6 mb-2">
+                                    <strong><i class="bi bi-cash-coin"></i> Precio:</strong>
+                                    <span class="text-success">$@Model.Precio.ToString("N2")</span>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <strong><i class="bi bi-box-seam"></i> Stock:</strong>
+                                    <span>@Model.Stock unidades</span>
+                                </div>
+                                <div class="col-12">
+                                    <strong><i class="bi bi-calendar-event"></i> Fecha de Publicación:</strong>
+                                    <span>@Model.FechaPublicacion.ToString("dd/MM/yyyy")</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulario de confirmación -->
+                    <form asp-action="Delete" method="post" class="mt-4">
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="bi bi-trash"></i> Sí, Eliminar Libro
+                            </button>
+                            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

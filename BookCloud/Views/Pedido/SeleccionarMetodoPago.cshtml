@@ -1,0 +1,96 @@
+@using BookCloud.Models.ViewModels
+@model MetodoPagoViewModel
+
+@{
+    ViewData["Title"] = "Seleccionar Método de Pago";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="section-title">
+                <i class="bi bi-credit-card"></i> Seleccionar Método de Pago
+            </h1>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="summary-row">
+                        <span class="h5">Total a pagar:</span>
+                        <span class="h4 text-gold">$@Model.Total.ToString("N2")</span>
+                    </div>
+                </div>
+            </div>
+
+            <form asp-action="SeleccionarMetodoPago" method="post">
+                <!-- Opción Wallet -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                   type="radio" 
+                                   name="metodoPago" 
+                                   id="wallet" 
+                                   value="Wallet" 
+                                   @(Model.TieneSaldoSuficiente ? "checked" : "disabled") />
+                            <label class="form-check-label w-100" for="wallet">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="bi bi-wallet2 text-gold" style="font-size: 1.5rem;"></i>
+                                        <strong class="ms-2">Pagar con Wallet</strong>
+                                        <div class="text-muted small mt-1">
+                                            Saldo disponible: $@Model.SaldoDisponible.ToString("N2")
+                                        </div>
+                                    </div>
+                                    @if (!Model.TieneSaldoSuficiente)
+                                    {
+                                        <span class="badge bg-danger">Saldo insuficiente</span>
+                                    }
+                                </div>
+                            </label>
+                        </div>
+                        @if (!Model.TieneSaldoSuficiente)
+                        {
+                            <div class="alert alert-warning mt-3 mb-0">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                Necesitas <strong>$@((Model.Total - Model.SaldoDisponible).ToString("N2"))</strong> más en tu Wallet.
+                                <a asp-controller="Wallet" asp-action="Index" class="alert-link">Recargar ahora</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Opción Tarjeta -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                   type="radio" 
+                                   name="metodoPago" 
+                                   id="tarjeta" 
+                                   value="Tarjeta"
+                                   @(!Model.TieneSaldoSuficiente ? "checked" : "") />
+                            <label class="form-check-label w-100" for="tarjeta">
+                                <div>
+                                    <i class="bi bi-credit-card text-primary" style="font-size: 1.5rem;"></i>
+                                    <strong class="ms-2">Pagar con Tarjeta</strong>
+                                    <div class="text-muted small mt-1">
+                                        Tarjeta de crédito o débito
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-arrow-right-circle"></i> Continuar
+                    </button>
+                    <a asp-controller="Carrito" asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver al Carrito
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

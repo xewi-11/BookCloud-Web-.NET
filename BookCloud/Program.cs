@@ -1,6 +1,7 @@
 using BookCloud.Data;
 using BookCloud.Helpers;
 using BookCloud.Repositories;
+using BookCloud.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,8 +16,11 @@ builder.Services.AddSession(options =>
 
 });
 
-builder.Services.AddTransient<RepositoryUsuarios>();
-builder.Services.AddTransient<RepositoryLibros>();
+builder.Services.AddTransient<IRepositoryUsuarios, RepositoryUsuarios>();
+builder.Services.AddTransient<IRepositoryLibros, RepositoryLibros>();
+builder.Services.AddTransient<IRepositoryWallet, RepositoryWallet>();
+builder.Services.AddTransient<IRepositoryPedidos, RepositoryPedidos>();
+builder.Services.AddScoped<IRepositoryPagos, RepositoryPagos>();
 
 builder.Services.AddDbContext<BookCloudContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BookCloud")));

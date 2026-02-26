@@ -1,6 +1,6 @@
 ﻿using BookCloud.Helpers;
 using BookCloud.Models;
-using BookCloud.Repositories;
+using BookCloud.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using static BookCloud.Helpers.FolderHelper;
 
@@ -8,10 +8,10 @@ namespace BookCloud.Controllers
 {
     public class UsuarioController : Controller
     {
-        private RepositoryUsuarios _repo;
+        private IRepositoryUsuarios _repo;
         private readonly FotoUsuario _fotoHelper;
 
-        public UsuarioController(RepositoryUsuarios repo, FotoUsuario helper)
+        public UsuarioController(IRepositoryUsuarios repo, FotoUsuario helper)
         {
             this._repo = repo;
             this._fotoHelper = helper;

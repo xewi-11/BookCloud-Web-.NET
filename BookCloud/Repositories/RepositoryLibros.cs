@@ -82,55 +82,52 @@ namespace BookCloud.Repositories
     //--procedimiento crearr Libro:
     //-- Inserta un nuevo libro en el sistema.
     //-- Valida que el usuario vendedor exista y esté activo antes de crear el registro.
-    //CREATE OR ALTER PROCEDURE SP_Libro_Crear
-    //(
-    //    @Titulo NVARCHAR(200),
-    //    @Autor NVARCHAR(200),
-    //    @Descripcion NVARCHAR(MAX),
-    //    @Precio DECIMAL(10,2),
-    //    @Stock INT,
-    //    @Foto NVARCHAR(500),
-    //    @FechaPublicacion DATE,
-    //    @UsuarioId INT
-    //)
-    //AS
-    //BEGIN
-    //    SET NOCOUNT ON;
+    //public async Task<int> InsertLibro(Libro libro)
+    //{
+    //    string sql = "SP_Libro_Crear";
+    //    SqlParameter panTitulo = new SqlParameter("@Titulo", libro.Titulo);
+    //    SqlParameter panAutor = new SqlParameter("@Autor", libro.Autor);
+    //    SqlParameter panDescripcion = new SqlParameter("@Descripcion", libro.Descripcion);
+    //    SqlParameter panPrecio = new SqlParameter("@Precio", libro.Precio);
+    //    SqlParameter panStock = new SqlParameter("@Stock", libro.Stock);
+    //    SqlParameter panFoto = new SqlParameter("@Foto", libro.Foto);
+    //    SqlParameter panFechaPublicacion = new SqlParameter("@FechaPublicacion", libro.FechaPublicacion);
+    //    SqlParameter panUsuarioId = new SqlParameter("@UsuarioId", libro.UsuarioId);
 
-    //    IF NOT EXISTS(
-    //        SELECT 1 FROM Usuarios
-    //        WHERE Id = @UsuarioId AND Activo = 1
-    //    )
-    //    BEGIN
-    //        RAISERROR('El usuario no existe o no está activo.',16,1);
-    //RETURN;
-    //    END
+    //    // Parámetro de salida para capturar el ID generado
+    //    SqlParameter panLibroId = new SqlParameter("@LibroId", SqlDbType.Int)
+    //    {
+    //        Direction = ParameterDirection.Output
+    //    };
 
-    //    INSERT INTO Libros
-    //    (
-    //        Titulo,
-    //        Autor,
-    //        Descripcion,
-    //        Precio,
-    //        Stock,
-    //        Foto,
-    //        FechaPublicacion,
-    //        UsuarioId,
-    //        Activo
-    //    )
-    //    VALUES
-    //    (
-    //        @Titulo,
-    //        @Autor,
-    //        @Descripcion,
-    //        @Precio,
-    //        @Stock,
-    //        @Foto,
-    //        @FechaPublicacion,
-    //        @UsuarioId,
-    //        1
-    //    );
-    //END
+    //    using (DbCommand com = this.context.Database.GetDbConnection().CreateCommand())
+    //    {
+    //        com.CommandType = CommandType.StoredProcedure;
+    //        com.CommandText = sql;
+    //        com.Parameters.Add(panTitulo);
+    //        com.Parameters.Add(panAutor);
+    //        com.Parameters.Add(panDescripcion);
+    //        com.Parameters.Add(panPrecio);
+    //        com.Parameters.Add(panStock);
+    //        com.Parameters.Add(panFoto);
+    //        com.Parameters.Add(panFechaPublicacion);
+    //        com.Parameters.Add(panUsuarioId);
+    //        com.Parameters.Add(panLibroId);
+
+    //        await com.Connection.OpenAsync();
+    //        await com.ExecuteNonQueryAsync();
+
+    //        // Capturar el valor del parámetro de salida
+    //        int libroId = (int)panLibroId.Value;
+
+    //        await com.Connection.CloseAsync();
+    //        com.Parameters.Clear();
+
+    //        // Asignar el ID al objeto libro y devolverlo
+    //        libro.Id = libroId;
+    //        return libroId;
+    //    }
+    //}
 
 
 
@@ -246,7 +243,7 @@ namespace BookCloud.Repositories
         }
 
 
-        public async Task InsertLibro(Libro libro)
+        public async Task<int> InsertLibro(Libro libro)
         {
             string sql = "SP_Libro_Crear";
             SqlParameter panTitulo = new SqlParameter("@Titulo", libro.Titulo);
@@ -257,6 +254,12 @@ namespace BookCloud.Repositories
             SqlParameter panFoto = new SqlParameter("@Foto", libro.Foto);
             SqlParameter panFechaPublicacion = new SqlParameter("@FechaPublicacion", libro.FechaPublicacion);
             SqlParameter panUsuarioId = new SqlParameter("@UsuarioId", libro.UsuarioId);
+
+            // Parámetro de salida para capturar el ID generado
+            SqlParameter panLibroId = new SqlParameter("@LibroId", SqlDbType.Int)
+            {
+                Direction = ParameterDirection.Output
+            };
 
             using (DbCommand com = this.context.Database.GetDbConnection().CreateCommand())
             {
@@ -270,11 +273,20 @@ namespace BookCloud.Repositories
                 com.Parameters.Add(panFoto);
                 com.Parameters.Add(panFechaPublicacion);
                 com.Parameters.Add(panUsuarioId);
+                com.Parameters.Add(panLibroId);
 
                 await com.Connection.OpenAsync();
                 await com.ExecuteNonQueryAsync();
+
+                // Capturar el valor del parámetro de salida
+                int libroId = (int)panLibroId.Value;
+
                 await com.Connection.CloseAsync();
                 com.Parameters.Clear();
+
+                // Asignar el ID al objeto libro y devolverlo
+                libro.Id = libroId;
+                return libroId;
             }
         }
 

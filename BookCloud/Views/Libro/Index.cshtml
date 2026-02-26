@@ -1,89 +1,86 @@
-﻿@model IEnumerable<BookCloud.Models.Libro>
+﻿@model List<Libro>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Catálogo de Libros";
 }
 
-<h1>Libros Disponibles</h1>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="section-title mb-0">Catálogo de Libros</h1>
+        @if (!string.IsNullOrEmpty(Context.Session.GetString("Id")))
+        {
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nuevo Libro
+            </a>
+        }
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Titulo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Autor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Descripcion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Foto)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Precio)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Stock)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UsuarioId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaPublicacion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Activo)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Titulo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Autor)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descripcion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Foto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Precio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Stock)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UsuarioId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaPublicacion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Activo)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-                @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-                @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    @if (Model != null && Model.Any())
+    {
+        <div class="book-grid">
+            @foreach (var libro in Model)
+            {
+                <div class="book-card animate-fade-in">
+                    <div class="position-relative overflow-hidden">
+                        <img src="~/imagenes/Libros/@libro.Foto" 
+                             alt="@libro.Titulo" 
+                             class="book-card-image" />
+                        @if (libro.Stock < 5 && libro.Stock > 0)
+                        {
+                            <span class="badge bg-warning position-absolute top-0 end-0 m-3">
+                                ¡Últimas unidades!
+                            </span>
+                        }
+                        @if (libro.Stock == 0)
+                        {
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-3">
+                                Agotado
+                            </span>
+                        }
+                    </div>
+
+                    <div class="book-card-body">
+                        <h3 class="book-card-title">@libro.Titulo</h3>
+                        <p class="book-card-author">
+                            <i class="bi bi-person-fill"></i> @libro.Autor
+                        </p>
+                        <p class="book-card-description">@libro.Descripcion</p>
+
+                        <div class="book-card-footer">
+                            <div>
+                                <div class="book-card-price">$@libro.Precio.ToString("N2")</div>
+                                <div class="book-card-stock @(libro.Stock < 5 ? "low-stock" : "")">
+                                    <i class="bi bi-box-seam"></i> Stock: @libro.Stock
+                                </div>
+                            </div>
+                            <a asp-action="Details" asp-route-id="@libro.Id" class="btn btn-outline-gold">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                        </div>
+
+                        @* Botones de editar/eliminar solo para el propietario *@
+                        @if (!string.IsNullOrEmpty(Context.Session.GetString("Id")) && 
+                             libro.UsuarioId.ToString() == Context.Session.GetString("Id"))
+                        {
+                            <div class="d-flex gap-2 mt-2">
+                                <a asp-action="Edit" asp-route-id="@libro.Id" class="btn btn-sm btn-warning flex-grow-1">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@libro.Id" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle" style="font-size: 2rem;"></i>
+            <p class="mb-0 mt-2">No hay libros disponibles en este momento.</p>
+        </div>
+    }
+</div>

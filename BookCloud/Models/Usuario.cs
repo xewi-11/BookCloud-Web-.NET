@@ -31,5 +31,12 @@ namespace BookCloud.Models
 
         // Relación uno a uno con UsuarioSeguridad
         public UsuarioSeguridad? UsuarioSeguridad { get; set; }
+
+        // Relación con movimientos de saldo
+        public ICollection<SaldoMovimiento>? SaldoMovimientos { get; set; }
+
+        // Saldo calculado (no mapeado a BD)
+        [NotMapped]
+        public decimal SaldoActual { get; set; }
     }
 }

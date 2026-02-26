@@ -1,0 +1,105 @@
+@using BookCloud.Models
+@using BookCloud.Repositories.Interfaces
+@inject IRepositoryWallet RepoWallet
+
+@{
+    var isAuthenticated = (bool)(ViewData["IsAuthenticated"] ?? false);
+    var userName = ViewData["UserName"]?.ToString();
+    decimal saldoActual = 0;
+    if (isAuthenticated)
+    {
+        var userIdStr = Context.Session.GetString("Id");
+        if (!string.IsNullOrEmpty(userIdStr))
+        {
+            int usuarioId = int.Parse(userIdStr);
+            saldoActual = RepoWallet.GetSaldoUsuario(usuarioId).Result;
+        }
+    }
+}
+
+@if (isAuthenticated)
+{
+    <!-- Usuario autenticado: Menú desplegable -->
+    <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2"
+               href="#"
+               id="userDropdown"
+               role="button"
+               data-bs-toggle="dropdown"
+               aria-expanded="false">
+                <i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>
+                @if (!string.IsNullOrEmpty(userName))
+                {
+                    <span class="d-none d-lg-inline user-name-nav">@userName</span>
+                }
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li class="dropdown-header">
+                    <i class="bi bi-person-badge"></i> @userName
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item" asp-controller="Usuario" asp-action="IndexPerfil">
+                        <i class="bi bi-person-fill"></i> Mi Perfil
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item position-relative" asp-controller="Carrito" asp-action="Index">
+                        <i class="bi bi-cart3"></i> Carrito
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-controller="Favoritos" asp-action="Index">
+                        <i class="bi bi-heart"></i> Favoritos
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-controller="Pedido" asp-action="MisPedidos">
+                        <i class="bi bi-box-seam"></i> Mis Pedidos
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item" asp-controller="Wallet" asp-action="Index">
+                        <i class="bi bi-wallet2"></i> Wallet
+                        <span class="badge rounded-pill bg-success ms-2"
+                              title="Saldo actual">
+                            $@saldoActual
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-controller="Wallet" asp-action="Movimientos">
+                        <i class="bi bi-arrow-left-right"></i> Movimientos de Pago
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+}
+else
+{
+    <!-- Usuario NO autenticado: Botones Login/Registro -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Auth" asp-action="Login">
+                <i class="bi bi-box-arrow-in-right"></i>
+                <span class="d-none d-lg-inline">Iniciar Sesión</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link btn-outline-gold-nav" asp-controller="Auth" asp-action="RegisterUser">
+                <i class="bi bi-person-plus"></i>
+                <span class="d-none d-lg-inline">Registrarse</span>
+            </a>
+        </li>
+    </ul>
+}

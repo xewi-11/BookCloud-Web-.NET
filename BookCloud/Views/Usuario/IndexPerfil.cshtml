@@ -1,95 +1,132 @@
 ﻿@model Usuario
 
 @{
-    ViewData["Title"] = "Perfil";
+    ViewData["Title"] = "Mi Perfil";
 }
 
-@if (TempData["Mensaje"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["Mensaje"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
+<div class="container profile-container">
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @TempData["Error"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 
-@if (Model != null)
-{
-    <div class="container mt-4">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Mi Perfil</h4>
-                    </div>
-                    <div class="card-body">
-                        <!-- Preview de la foto actual -->
-                        <div class="text-center mb-4">
-                            <img id="previewFoto"
-                                 src='@ViewData["PATHWEB"]'
-                                 class="img-thumbnail rounded-circle"
-                                 alt="Foto de perfil"
-                                 style="width: 150px; height: 150px; object-fit: cover;">
-                        </div>
+    @if (Model != null)
+    {
+        <div class="profile-card animate-fade-in">
+            <div class="text-center mb-4">
+                <h1 class="section-title mb-3">Mi Perfil</h1>
+            </div>
 
-                        <form asp-action="ActualizarPerfil" asp-controller="Usuario" method="post" enctype="multipart/form-data">
-                            <input type="hidden" name="Id" value="@Model.Id" />
-                            <div class="mb-3">
-                                <label for="foto" class="form-label">Cambiar foto de perfil</label>
-                                <input type="file"
-                                       class="form-control"
-                                       id="foto"
-                                       name="Foto"
-                                       accept="image/jpeg,image/png,image/gif"
-                                       onchange="previewImage(this)">
-                                <small class="text-muted">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 5MB</small>
-                            </div>
+            <form asp-action="ActualizarPerfil" asp-controller="Usuario" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="Id" value="@Model.Id" />
 
-                            <div class="mb-3">
-                                <label for="nombre" class="form-label">Nombre</label>
-                                <input type="text" class="form-control" id="nombre" name="Nombre" value="@Model.Nombre" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="correo" class="form-label">Correo</label>
-                                <input type="email" class="form-control" id="correo" name="Correo" value="@Model.Correo" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="contraseña" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" id="contraseña" name="Contraseña" placeholder="Nueva contraseña (dejar en blanco para mantener)">
-                            </div>
-
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                                <a asp-controller="Libro" asp-action="Create" class="btn btn-secondary">Añadir libro</a>
-                            </div>
-                        </form>
+                <!-- Foto de perfil -->
+                <div class="profile-image-container">
+                    <img id="previewFoto"
+                         src='@ViewData["PATHWEB"]'
+                         class="profile-image"
+                         alt="Foto de perfil">
+                    <div class="profile-image-overlay">
+                        <i class="bi bi-camera-fill text-gold" style="font-size: 2.5rem;"></i>
                     </div>
                 </div>
-            </div>
+
+                <div class="mb-4">
+                    <label for="foto" class="form-label text-center d-block">
+                        <i class="bi bi-image"></i> Cambiar foto de perfil
+                    </label>
+                    <input type="file"
+                           class="form-control"
+                           id="foto"
+                           name="Foto"
+                           accept="image/jpeg,image/png,image/gif"
+                           onchange="previewImage(this)">
+                    <small class="text-muted">Formatos: JPG, PNG, GIF. Tamaño máximo: 5MB</small>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="nombre" class="form-label">
+                            <i class="bi bi-person-badge"></i> Nombre completo
+                        </label>
+                        <input type="text"
+                               class="form-control"
+                               id="nombre"
+                               name="Nombre"
+                               value="@Model.Nombre"
+                               required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="correo" class="form-label">
+                            <i class="bi bi-envelope"></i> Correo electrónico
+                        </label>
+                        <input type="email"
+                               class="form-control"
+                               id="correo"
+                               name="Correo"
+                               value="@Model.Correo"
+                               required>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="contraseña" class="form-label">
+                            <i class="bi bi-lock"></i> Nueva contraseña
+                        </label>
+                        <input type="password"
+                               class="form-control"
+                               id="contraseña"
+                               name="Contraseña"
+                               placeholder="Dejar en blanco para mantener la actual">
+                        <small class="text-muted">Solo completa este campo si deseas cambiar tu contraseña</small>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-save"></i> Guardar Cambios
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <a asp-controller="Libro" asp-action="Create" class="btn btn-secondary w-100">
+                            <i class="bi bi-plus-circle"></i> Publicar Libro
+                        </a>
+                    </div>
+                </div>
+            </form>
         </div>
-    </div>
-}
+    }
+</div>
 
 @section Scripts {
     <script>
         function previewImage(input) {
             if (input.files && input.files[0]) {
                 const file = input.files[0];
+
                 // Validar tamaño (5MB)
                 if (file.size > 5 * 1024 * 1024) {
                     alert('La imagen es demasiado grande. Tamaño máximo: 5MB');
                     input.value = '';
                     return;
                 }
+
                 // Preview
                 const reader = new FileReader();
                 reader.onload = function(e) {

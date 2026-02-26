@@ -1,15 +1,15 @@
 ﻿using BookCloud.Helpers;
 using BookCloud.Models;
-using BookCloud.Repositories;
+using BookCloud.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookCloud.Controllers
 {
     public class AuthController : Controller
     {
-        private RepositoryUsuarios _repo;
+        private IRepositoryUsuarios _repo;
 
-        public AuthController(RepositoryUsuarios repo)
+        public AuthController(IRepositoryUsuarios repo)
         {
             this._repo = repo;
         }
@@ -70,12 +70,22 @@ namespace BookCloud.Controllers
                     HttpContext.Session.SetString("Id", s.Id.ToString());
                     HttpContext.Session.SetString("Nombre", s.Nombre);
                     HttpContext.Session.SetString("Correo", s.Correo);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Libro");
                 }
             }
             // Autenticación fallida
             ViewData["Error"] = "Correo o contraseña incorrectos.";
             return View();
+        }
+
+
+        public IActionResult Logout()
+        {
+            // Limpiar toda la sesión del usuario
+            HttpContext.Session.Clear();
+
+            // Redirigir a la página de login
+            return RedirectToAction("Login");
         }
     }
 }

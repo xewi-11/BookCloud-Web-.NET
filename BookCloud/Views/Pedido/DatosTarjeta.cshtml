@@ -1,0 +1,134 @@
+@using BookCloud.Models.ViewModels
+@model DatosTarjetaViewModel
+
+@{
+    ViewData["Title"] = "Datos de la Tarjeta";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <h1 class="section-title">
+                <i class="bi bi-credit-card-2-front"></i> Datos de la Tarjeta
+            </h1>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="summary-row">
+                        <span class="h5">Total a pagar:</span>
+                        <span class="h4 text-gold">$@Model.Total.ToString("N2")</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="ProcesarPagoTarjeta" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <input type="hidden" asp-for="Total" />
+
+                        <div class="mb-3">
+                            <label asp-for="NumeroTarjeta" class="form-label">
+                                <i class="bi bi-credit-card"></i> Número de tarjeta
+                            </label>
+                            <input asp-for="NumeroTarjeta" 
+                                   class="form-control" 
+                                   placeholder="1234 5678 9012 3456"
+                                   maxlength="16"
+                                   inputmode="numeric"
+                                   pattern="[0-9]*" />
+                            <span asp-validation-for="NumeroTarjeta" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-shield-check"></i> Pago 100% seguro y encriptado
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="NombreTitular" class="form-label">
+                                <i class="bi bi-person"></i> Nombre del titular
+                            </label>
+                            <input asp-for="NombreTitular" 
+                                   class="form-control" 
+                                   placeholder="Como aparece en la tarjeta"
+                                   style="text-transform: uppercase;" />
+                            <span asp-validation-for="NombreTitular" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FechaVencimiento" class="form-label">
+                                    <i class="bi bi-calendar"></i> Fecha de vencimiento
+                                </label>
+                                <input asp-for="FechaVencimiento" 
+                                       class="form-control" 
+                                       placeholder="MM/AA"
+                                       maxlength="5" />
+                                <span asp-validation-for="FechaVencimiento" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CVV" class="form-label">
+                                    <i class="bi bi-lock"></i> CVV
+                                </label>
+                                <input asp-for="CVV" 
+                                       class="form-control" 
+                                       placeholder="123"
+                                       maxlength="4"
+                                       type="password"
+                                       inputmode="numeric"
+                                       pattern="[0-9]*" />
+                                <span asp-validation-for="CVV" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Pago simulado:</strong> Esta es una simulación. No se realizará ningún cargo real a tu tarjeta.
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle"></i> Confirmar Pago
+                            </button>
+                            <a asp-action="SeleccionarMetodoPago" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <small class="text-muted">
+                    <i class="bi bi-shield-lock"></i> Tus datos están protegidos con encriptación SSL
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        // Formatear número de tarjeta automáticamente
+        document.querySelector('[name="NumeroTarjeta"]').addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        // Formatear fecha de vencimiento (MM/AA)
+        document.querySelector('[name="FechaVencimiento"]').addEventListener('input', function(e) {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            this.value = value;
+        });
+
+        // Solo números en CVV
+        document.querySelector('[name="CVV"]').addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+    </script>
+}

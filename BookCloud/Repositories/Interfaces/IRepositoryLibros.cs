@@ -6,7 +6,7 @@ namespace BookCloud.Repositories.Interfaces
     {
         Task<List<Libro>> GetLibros();
         Task<Libro> GetLibro(int id);
-        Task InsertLibro(Libro libro);
+        Task<int> InsertLibro(Libro libro);
         Task UpdateLibro(Libro libro);
         Task DeleteLibro(int id);
     }

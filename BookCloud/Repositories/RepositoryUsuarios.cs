@@ -22,7 +22,7 @@ namespace BookCloud.Repositories
                 await this._context.Usuarios.AddAsync(user);
                 await this._context.SaveChangesAsync();
 
-                seguridad.IdUsuario = user.Id;
+                seguridad.UsuarioId = user.Id;
                 await this._context.UsuarioCredenciales.AddAsync(seguridad);
                 await this._context.SaveChangesAsync();
 
@@ -64,7 +64,7 @@ namespace BookCloud.Repositories
         public async Task<UsuarioSeguridad> GetSeguridadUsuario(int idUsuario)
         {
             return await _context.UsuarioCredenciales
-                .FirstOrDefaultAsync(us => us.IdUsuario == idUsuario);
+                .FirstOrDefaultAsync(us => us.UsuarioId == idUsuario);
         }
     }
 }
