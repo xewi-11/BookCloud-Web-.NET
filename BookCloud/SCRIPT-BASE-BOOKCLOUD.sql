@@ -515,55 +515,61 @@
 --    -- Inserta un nuevo libro en el sistema.
 --    -- Valida que el usuario vendedor exista y esté activo antes de crear el registro.
 --    CREATE OR ALTER PROCEDURE SP_Libro_Crear
---    (
---        @Titulo NVARCHAR(200),
---        @Autor NVARCHAR(200),
---        @Descripcion NVARCHAR(MAX),
---        @Precio DECIMAL(10,2),
---        @Stock INT,
---        @Foto NVARCHAR(500),
---        @FechaPublicacion DATE,
---        @UsuarioId INT
+--(
+--    @Titulo NVARCHAR(200),
+--    @Autor NVARCHAR(200),
+--    @Descripcion NVARCHAR(MAX),
+--    @Precio DECIMAL(10,2),
+--    @Stock INT,
+--    @Foto NVARCHAR(500),
+--    @FechaPublicacion DATE,
+--    @UsuarioId INT,
+--    @LibroId INT OUTPUT
+--)
+--AS
+--BEGIN
+--    SET NOCOUNT ON;
+
+--    IF NOT EXISTS(
+--        SELECT 1 
+--        FROM Usuarios
+--        WHERE Id = @UsuarioId AND Activo = 1
 --    )
---    AS
 --    BEGIN
---        SET NOCOUNT ON;
-
---        IF NOT EXISTS(
---            SELECT 1 FROM Usuarios
---            WHERE Id = @UsuarioId AND Activo = 1
---        )
---        BEGIN
---            RAISERROR('El usuario no existe o no está activo.',16,1);
---    RETURN;
---        END
-
---        INSERT INTO Libros
---        (
---            Titulo,
---            Autor,
---            Descripcion,
---            Precio,
---            Stock,
---            Foto,
---            FechaPublicacion,
---            UsuarioId,
---            Activo
---        )
---        VALUES
---        (
---            @Titulo,
---            @Autor,
---            @Descripcion,
---            @Precio,
---            @Stock,
---            @Foto,
---            @FechaPublicacion,
---            @UsuarioId,
---            1
---        );
+--        RAISERROR('El usuario no existe o no está activo.',16,1);
+--        RETURN;
 --    END
 
+--    -- Obtener el siguiente ID de la secuencia
+--    SET @LibroId = NEXT VALUE FOR Seq_Libros;
+
+--    INSERT INTO Libros
+--    (
+--        Id,
+--        Titulo,
+--        Autor,
+--        Descripcion,
+--        Precio,
+--        Stock,
+--        Foto,
+--        FechaPublicacion,
+--        UsuarioId,
+--        Activo
+--    )
+--    VALUES
+--    (
+--        @LibroId,
+--        @Titulo,
+--        @Autor,
+--        @Descripcion,
+--        @Precio,
+--        @Stock,
+--        @Foto,
+--        @FechaPublicacion,
+--        @UsuarioId,
+--        1
+--    );
+--END
 
 
 
