@@ -19,11 +19,12 @@ namespace BookCloud.Controllers
 
         public async Task<IActionResult> IndexPerfil()
         {
-            var idUsuario = HttpContext.Session.GetString("Id");
-            if (string.IsNullOrEmpty(idUsuario))
-                return RedirectToAction("Index", "Auth");
+            // 🆕 MIGRADO A CLAIMS: Obtener ID desde Claims
+            var idUsuario = AuthHelper.GetUserId(User);
+            if (!idUsuario.HasValue)
+                return RedirectToAction("Login", "Auth");
 
-            Usuario user = await _repo.GetInfoUsario(idUsuario);
+            Usuario user = await _repo.GetInfoUsario(idUsuario.Value.ToString());
             if (user.Foto != null)
             {
                 string pathweb = this._fotoHelper.MapUrlPath(user.Foto, Folder.Usuarios, user.Id);
@@ -38,12 +39,13 @@ namespace BookCloud.Controllers
         {
             try
             {
-                var idUsuario = HttpContext.Session.GetString("Id");
-                if (string.IsNullOrEmpty(idUsuario))
-                    return RedirectToAction("Index", "Auth");
+                // 🆕 MIGRADO A CLAIMS: Obtener ID desde Claims
+                var idUsuario = AuthHelper.GetUserId(User);
+                if (!idUsuario.HasValue)
+                    return RedirectToAction("Login", "Auth");
 
                 // Obtener usuario actual de la BD
-                var usuarioExistente = await _repo.GetInfoUsario(idUsuario);
+                var usuarioExistente = await _repo.GetInfoUsario(idUsuario.Value.ToString());
                 if (usuarioExistente == null)
                     return NotFound();
 

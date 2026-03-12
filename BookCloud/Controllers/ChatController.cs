@@ -1,4 +1,5 @@
-﻿using BookCloud.Repositories.Interfaces;
+﻿using BookCloud.Helpers;
+using BookCloud.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookCloud.Controllers
@@ -19,14 +20,11 @@ namespace BookCloud.Controllers
             _repositoryLibros = repositoryLibros;
         }
 
+        // 🆕 MIGRADO A CLAIMS: Obtener usuario desde cookie de autenticación
         private int ObtenerUsuarioIdActual()
         {
-            var usuarioIdString = HttpContext.Session.GetString("Id");
-            if (int.TryParse(usuarioIdString, out int usuarioId))
-            {
-                return usuarioId;
-            }
-            return 0;
+            var userId = AuthHelper.GetUserId(User);
+            return userId ?? 0;
         }
 
         public async Task<IActionResult> Index()

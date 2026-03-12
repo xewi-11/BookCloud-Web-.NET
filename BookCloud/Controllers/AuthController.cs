@@ -2,6 +2,9 @@
 using BookCloud.Models;
 using BookCloud.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace BookCloud.Controllers
 {
@@ -66,15 +69,33 @@ namespace BookCloud.Controllers
                 byte[] hash = Encryption.EncryptPassword(cred.Password, s.UsuarioSeguridad.Salt);
                 if (Encryption.CompareArrays(hash, s.UsuarioSeguridad.PasswordHash))
                 {
-                    // Autenticación exitosa
-                    HttpContext.Session.SetString("Id", s.Id.ToString());
-                    HttpContext.Session.SetString("Nombre", s.Nombre);
-                    HttpContext.Session.SetString("Correo", s.Correo);
-                    // ✅ Agregar foto a la sesión
+                    // 🆕 MIGRADO A CLAIMS: Ya no usamos Session para datos de usuario
+                    // Crear Claims con toda la información del usuario
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, s.Id.ToString()),
+                        new Claim(ClaimTypes.Name, s.Nombre),
+                        new Claim(ClaimTypes.Email, s.Correo)
+                    };
+
+                    // Agregar foto si existe
                     if (!string.IsNullOrEmpty(s.Foto))
                     {
-                        HttpContext.Session.SetString("FOTO", s.Foto);
+                        claims.Add(new Claim("Foto", s.Foto));
                     }
+
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var authProperties = new AuthenticationProperties
+                    {
+                        IsPersistent = true,
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8)
+                    };
+
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIdentity),
+                        authProperties);
+
                     return RedirectToAction("Index", "Libro");
                 }
             }
@@ -84,9 +105,12 @@ namespace BookCloud.Controllers
         }
 
 
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            // Limpiar toda la sesión del usuario
+            // 🆕 MIGRADO A CLAIMS: Limpiar cookie de autenticación (ya no usamos Session para usuario)
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            // ✅ Limpiar Session (mantener por si hay carrito u otros datos)
             HttpContext.Session.Clear();
 
             // Redirigir a la página de login

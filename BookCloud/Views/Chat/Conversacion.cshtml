@@ -153,28 +153,32 @@
 
     /* Estilos para mensajes con ubicación */
     .location-map {
-        width: 300px;
-        height: 200px;
+        width: 100%;
+        max-width: 350px;
+        height: 250px;
         border-radius: 12px;
         overflow: hidden;
         margin-top: 0.5rem;
-        border: 2px solid rgba(0, 0, 0, 0.2);
+        border: 2px solid rgba(0, 0, 0, 0.3);
+        background: #e0e0e0;
     }
 
     .location-link {
         display: inline-block;
-        margin-top: 0.5rem;
-        padding: 0.4rem 0.8rem;
+        margin-top: 0.75rem;
+        padding: 0.5rem 1rem;
         background: rgba(255, 255, 255, 0.2);
         border-radius: 8px;
         text-decoration: none;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
+        font-weight: 600;
         transition: all 0.2s ease;
     }
 
     .location-link:hover {
-        background: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.35);
         transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
     .message-bubble.other .location-link {
@@ -183,66 +187,15 @@
 
     .message-bubble.me .location-link {
         color: var(--verde-fondo);
+    }
+
+    /* Asegurar que los mapas de Leaflet se muestren correctamente */
+    .location-map .leaflet-container {
+        width: 100%;
+        height: 100%;
     }
 
     /* Avatares de mensajes */
-
-
-    .chat-input .btn-outline-warning {
-        border: 2px solid var(--dorado);
-        color: var(--dorado);
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        transition: all 0.3s ease;
-    }
-
-        .chat-input .btn-outline-warning:hover {
-            background: var(--dorado);
-            color: var(--verde-fondo);
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(198, 167, 94, 0.6);
-        }
-
-    /* Estilos para mensajes con ubicación */
-    .location-map {
-        width: 300px;
-        height: 200px;
-        border-radius: 12px;
-        overflow: hidden;
-        margin-top: 0.5rem;
-        border: 2px solid rgba(0, 0, 0, 0.2);
-    }
-
-    .location-link {
-        display: inline-block;
-        margin-top: 0.5rem;
-        padding: 0.4rem 0.8rem;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 8px;
-        text-decoration: none;
-        font-size: 0.85rem;
-        transition: all 0.2s ease;
-    }
-
-        .location-link:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-    .message-bubble.other .location-link {
-        color: white;
-    }
-
-    .message-bubble.me .location-link {
-        color: var(--verde-fondo);
-    }
-    /* Estilos para mensajes con ubicación */
-
     .message-avatar {
         width: 36px;
         height: 36px;
@@ -435,28 +388,21 @@
                             </div>
                         }
                         <div class="message-bubble @(esMio ? "me" : "other")">
-                            <p>@mensaje.Contenido</p>
+                            @if (!string.IsNullOrWhiteSpace(mensaje.Contenido))
+                            {
+                                <p>@mensaje.Contenido</p>
+                            }
                             @if (mensaje.TieneUbicacion && mensaje.Latitud.HasValue && mensaje.Longitud.HasValue)
                             {
-                                <div class="location-map" id="map-@mensaje.Id"></div>
+                                <div class="location-map" 
+                                     id="map-@mensaje.Id"
+                                     data-lat="@mensaje.Latitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)" 
+                                     data-lng="@mensaje.Longitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)"></div>
                                 <a href="https://www.google.com/maps?q=@mensaje.Latitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture),@mensaje.Longitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)" 
                                    target="_blank" 
                                    class="location-link">
                                     <i class="bi bi-map"></i> Ver en Google Maps
                                 </a>
-                                <script>
-                                    (function() {
-                                        var map = L.map('map-@mensaje.Id', {
-                                            center: [@mensaje.Latitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture), @mensaje.Longitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)],
-                                            zoom: 15,
-                                            scrollWheelZoom: false
-                                        });
-                                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                                            attribution: '&copy; OpenStreetMap contributors'
-                                        }).addTo(map);
-                                        L.marker([@mensaje.Latitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture), @mensaje.Longitud.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)]).addTo(map);
-                                    })();
-                                </script>
                             }
                             <small class="message-time @(esMio ? "me" : "other") d-block text-end">
                                 @mensaje.FechaEnvio.ToString("HH:mm")
@@ -464,9 +410,10 @@
                         </div>
                         @if (esMio)
                         {
-                            var miNombre = Context.Session.GetString("Nombre");
+                            @* 🆕 MIGRADO A CLAIMS: Obtener nombre desde Claims *@
+                            var miNombre = User.Identity?.Name ?? "";
                             <div class="message-avatar me ms-2" style="align-self: end;">
-                                @miNombre?.Substring(0, 1).ToUpper()
+                                @(string.IsNullOrEmpty(miNombre) ? "?" : miNombre.Substring(0, 1).ToUpper())
                             </div>
                         }
                     </div>
@@ -512,7 +459,8 @@
         const chatId = @chatId;
         const usuarioActualId = @usuarioActualId;
         const otroUsuarioNombre = "@otroUsuario?.Nombre";
-        const miNombre = "@Context.Session.GetString("Nombre")";
+        // 🆕 MIGRADO A CLAIMS: Obtener nombre desde Claims en lugar de Session
+        const miNombre = "@User.Identity.Name";
 
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("/chatHub")
@@ -622,11 +570,20 @@
             
             const mapId = `map-${mensaje.id}`;
             let locationHTML = '';
+            let contenidoHTML = '';
+            
+            // Solo mostrar el contenido si no está vacío
+            if (mensaje.contenido && mensaje.contenido.trim() !== '') {
+                contenidoHTML = `<p>${escapeHtml(mensaje.contenido)}</p>`;
+            }
             
             if (mensaje.tieneUbicacion && mensaje.latitud && mensaje.longitud) {
                 const linkColor = esMio ? 'color: var(--verde-fondo);' : 'color: white;';
                 locationHTML = `
-                    <div class="location-map" id="${mapId}"></div>
+                    <div class="location-map" 
+                         id="${mapId}"
+                         data-lat="${mensaje.latitud}" 
+                         data-lng="${mensaje.longitud}"></div>
                     <a href="https://www.google.com/maps?q=${mensaje.latitud},${mensaje.longitud}" 
                        target="_blank" 
                        class="location-link"
@@ -640,7 +597,7 @@
                 <div class="d-flex mb-3 ${justifyClass}" data-mensaje-id="${mensaje.id}">
                     ${!esMio ? `<div class="message-avatar other me-2" style="align-self: end;">${inicial}</div>` : ''}
                     <div class="message-bubble ${bubbleClass}">
-                        <p>${escapeHtml(mensaje.contenido)}</p>
+                        ${contenidoHTML}
                         ${locationHTML}
                         <small class="message-time ${timeClass} d-block text-end">
                             ${mensaje.fechaEnvio}
@@ -655,15 +612,22 @@
             // Si el mensaje tiene ubicación, inicializar el mapa
             if (mensaje.tieneUbicacion && mensaje.latitud && mensaje.longitud) {
                 setTimeout(() => {
-                    const map = L.map(mapId, {
-                        center: [mensaje.latitud, mensaje.longitud],
-                        zoom: 15,
-                        scrollWheelZoom: false
-                    });
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; OpenStreetMap contributors'
-                    }).addTo(map);
-                    L.marker([mensaje.latitud, mensaje.longitud]).addTo(map);
+                    const mapElement = document.getElementById(mapId);
+                    if (mapElement && !mapElement._leaflet_id) {
+                        try {
+                            const map = L.map(mapId, {
+                                center: [mensaje.latitud, mensaje.longitud],
+                                zoom: 15,
+                                scrollWheelZoom: false
+                            });
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: '&copy; OpenStreetMap contributors'
+                            }).addTo(map);
+                            L.marker([mensaje.latitud, mensaje.longitud]).addTo(map);
+                        } catch (error) {
+                            console.error('Error inicializando mapa:', error);
+                        }
+                    }
                 }, 100);
             }
             
@@ -681,6 +645,42 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        window.addEventListener('load', scrollToBottom);
+        function inicializarMapas() {
+            // Inicializar todos los mapas existentes en la página
+            document.querySelectorAll('.location-map').forEach(mapElement => {
+                const mapId = mapElement.id;
+                const lat = parseFloat(mapElement.getAttribute('data-lat'));
+                const lng = parseFloat(mapElement.getAttribute('data-lng'));
+                
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    try {
+                        // Verificar si el mapa ya está inicializado
+                        if (mapElement._leaflet_id) {
+                            return; // Ya está inicializado
+                        }
+                        
+                        const map = L.map(mapId, {
+                            center: [lat, lng],
+                            zoom: 15,
+                            scrollWheelZoom: false
+                        });
+                        
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '&copy; OpenStreetMap contributors'
+                        }).addTo(map);
+                        
+                        L.marker([lat, lng]).addTo(map);
+                    } catch (error) {
+                        console.error(`Error inicializando mapa ${mapId}:`, error);
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('load', () => {
+            scrollToBottom();
+            // Inicializar mapas después de un pequeño delay para asegurar que Leaflet esté cargado
+            setTimeout(inicializarMapas, 100);
+        });
     </script>
 }

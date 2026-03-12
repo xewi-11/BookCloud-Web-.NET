@@ -328,12 +328,13 @@ namespace BookCloud.Controllers
         [HttpGet]
         public async Task<IActionResult> ConfirmacionPedido(int id)
         {
-            var usuarioId = HttpContext.Session.GetString("Id");
-            if (string.IsNullOrEmpty(usuarioId))
+            // 🆕 MIGRADO A CLAIMS: Obtener ID desde Claims
+            var usuarioId = AuthHelper.GetUserId(User);
+            if (!usuarioId.HasValue)
                 return RedirectToAction("Login", "Auth");
 
             var pedido = await _repoPedidos.GetPedido(id);
-            if (pedido == null || pedido.UsuarioId != int.Parse(usuarioId))
+            if (pedido == null || pedido.UsuarioId != usuarioId.Value)
             {
                 return NotFound();
             }
@@ -344,12 +345,13 @@ namespace BookCloud.Controllers
         [HttpGet]
         public async Task<IActionResult> MisPedidos()
         {
-            var usuarioId = HttpContext.Session.GetString("Id");
-            if (string.IsNullOrEmpty(usuarioId))
+            // 🆕 MIGRADO A CLAIMS: Obtener ID desde Claims
+            var usuarioId = AuthHelper.GetUserId(User);
+            if (!usuarioId.HasValue)
                 return RedirectToAction("Login", "Auth");
 
             // You likely want to get the user's orders and return a view.
-            var pedidos = await _repoPedidos.GetPedidosUsuario(int.Parse(usuarioId));
+            var pedidos = await _repoPedidos.GetPedidosUsuario(usuarioId.Value);
             return View(pedidos);
         }
     }

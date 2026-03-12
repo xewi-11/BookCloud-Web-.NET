@@ -34,8 +34,8 @@ namespace BookCloud.Controllers
         }
         public IActionResult Create()
         {
-            // Verificar si hay sesión activa
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("Id")))
+            // 🆕 MIGRADO A CLAIMS: Verificar autenticación desde cookie
+            if (!AuthHelper.IsAuthenticated(User))
             {
                 return RedirectToAction("Login", "Auth");
             }
@@ -45,7 +45,8 @@ namespace BookCloud.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(string Titulo, string Autor, string Descripcion, IFormFile imagenFile, decimal Precio, int Stock, DateTime FechaPublicacion, bool Activo)
         {
-            var UsuarioId = int.Parse(HttpContext.Session.GetString("Id"));
+            // 🆕 MIGRADO A CLAIMS: Obtener ID de usuario desde Claims
+            var UsuarioId = AuthHelper.GetUserId(User) ?? 0;
             string nameFoto = $"{UsuarioId}_{Titulo}_{imagenFile.FileName}";
             Libro libro = new Libro();
             if (imagenFile != null && imagenFile.Length > 0 && UsuarioId != null)
